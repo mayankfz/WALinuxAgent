@@ -22,7 +22,9 @@ from pathlib import Path
 from typing import Any, AnyStr, Dict, Iterable, List, Match
 
 from azurelinuxagent.common.future import UTC, datetime_min_utc
-from azurelinuxagent.common.version import DISTRO_NAME, DISTRO_VERSION
+from azurelinuxagent.common.version import DISTRO_NAME, DISTRO_FULL_NAME, DISTRO_VERSION
+
+_IS_ACL = "azure container linux" in DISTRO_FULL_NAME.lower()
 
 
 class AgentLogRecord:
@@ -303,7 +305,7 @@ class AgentLog(object):
                 'message': r"(?s)\[ProtocolError\].*http:\/\/168.63.129.16\/machine.*timed out",
                 'if': lambda r: r.thread == 'SendTelemetryHandler' and self._increment_counter("SendTelemetryHandler-telemetrydata-IOError-timed-out") < 2  # ignore unless there are 2 or more instances
             },
-            # Ignore these errors in flatcar:
+            # Ignore these errors in flatcar and ACL (Azure Container Linux):
             #
             #    1)  2023-03-16T14:30:33.091427Z ERROR Daemon Daemon Failed to mount resource disk [ResourceDiskError] unable to detect disk topology
             #    2)  2023-03-16T14:30:33.091708Z ERROR Daemon Daemon Event: name=WALinuxAgent, op=ActivateResourceDisk, message=[ResourceDiskError] unable to detect disk topology, duration=0
@@ -313,14 +315,15 @@ class AgentLog(object):
             # 1, 2) under investigation
             # 3) There seems to be a configuration issue in flatcar that prevents python from using HTTPS when trying to reach storage. This does not produce any actual errors, since the agent fallbacks to the HGAP.
             # 4) Remove this when bug 17523033 is fixed.
+            # ACL has a sysext-based read-only filesystem similar to Flatcar.
             #
             {
                 'message': r"(Failed to mount resource disk)|(unable to detect disk topology)",
-                'if': lambda r: r.prefix == 'Daemon' and DISTRO_NAME == 'flatcar'
+                'if': lambda r: r.prefix == 'Daemon' and (DISTRO_NAME == 'flatcar' or _IS_ACL)
             },
             {
                 'message': r"(HTTPS is unavailable and required)|(Unable to setup the persistent firewall rules.*Read-only file system)",
-                'if': lambda r: DISTRO_NAME == 'flatcar'
+                'if': lambda r: DISTRO_NAME == 'flatcar' or _IS_ACL
             },
             #
             # AzureSecurityLinuxAgent fails to install on a few distros (e.g. Debian 11)

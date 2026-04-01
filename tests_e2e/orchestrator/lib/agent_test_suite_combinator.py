@@ -190,7 +190,8 @@ class AgentTestSuitesCombinator(Combinator):
                     shared_gallery = ""
 
                 if test_suite_info.executes_on_scale_set and (vhd != "" or shared_gallery != ""):
-                    raise Exception("VHDS and images from galleries are currently not supported on scale sets.")
+                    self._log.info("Skipping test suite '%s' because VHDs and images from galleries are not supported on scale sets.", test_suite_info.name)
+                    continue
 
                 vm_size = self._get_vm_size(image)
 

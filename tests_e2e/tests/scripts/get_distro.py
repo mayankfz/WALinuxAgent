@@ -26,8 +26,13 @@ from azurelinuxagent.common.version import get_distro
 
 def main():
     # Prints '<distro>_<version>'
+    # For Azure Container Linux (ACL), return 'acl_<version>' to distinguish it from regular Azure Linux.
     distro = get_distro()
-    print(distro[0] + "_" + distro[1].replace('.', ''))
+    distro_name = distro[0]
+    full_name = distro[3] if len(distro) > 3 else ""
+    if "azure container linux" in full_name.lower():
+        distro_name = "acl"
+    print(distro_name + "_" + distro[1].replace('.', ''))
     sys.exit(0)
 
 

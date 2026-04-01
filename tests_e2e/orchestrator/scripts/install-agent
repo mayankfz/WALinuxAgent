@@ -157,6 +157,22 @@ if [[ $(uname -a) == *"flatcar"* ]]; then
 fi
 
 #
+# ACL (Azure Container Linux) uses a sysext-based filesystem similar to Flatcar.
+# Reset the UpheldBy property to prevent automatic agent restart on stop.
+#
+if grep -qi "azure container linux" /etc/os-release 2>/dev/null; then
+  uphold_target=$(systemctl show waagent --property=UpheldBy)
+  if [[ $uphold_target == *".target"* ]]; then
+    target_name="${uphold_target#*=}"
+    if [[ ! -d /etc/systemd/system/$target_name.d ]]; then
+      mkdir -p /etc/systemd/system/$target_name.d
+    fi
+    echo -e "[Unit]\nUpholds=" > /etc/systemd/system/$target_name.d/10-waagent-sysext.conf
+    systemctl daemon-reload
+  fi
+fi
+
+#
 # Install the package
 #
 echo "========== Installing Agent =========="

@@ -13,6 +13,7 @@ image-sets:
       - "alma_9"
       - "alma_10"
       - "mariner_2" # azure linux 2
+      - "acl"
       - "azure-linux_3"
       - "azure-linux_3_fips"
       - "centos_79"
@@ -157,6 +158,11 @@ images:
       vm_sizes:
          # See comment above wrt VM sizes for ARM64 machines
          - "Standard_B2pls_v2"
+      locations:
+         AzureUSGovernment: []
+         AzureChinaCloud: []
+   acl:
+      urn: "acldevel/acldevel/0.20260330.1081901"
       locations:
          AzureUSGovernment: []
          AzureChinaCloud: []

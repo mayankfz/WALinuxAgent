@@ -16,5 +16,6 @@ skip_on_clouds:
 # Since Flatcar read-only filesystem, we can't edit the version file. This test relies on the version to be updated in version file.
 # TODO: Enable once we find workaround for this
 skip_on_images:
+  - "acl"
   - "flatcar"
   - "flatcar_arm64"
