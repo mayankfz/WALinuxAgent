@@ -162,7 +162,7 @@ images:
          AzureUSGovernment: []
          AzureChinaCloud: []
    acl:
-      urn: "acldevel/acldevel/0.20260330.1081901"
+      urn: "macaclgallery/mayansingh-acl-test-vm-img/1.0.24"
       locations:
          AzureUSGovernment: []
          AzureChinaCloud: []

@@ -387,7 +387,10 @@ class AgentTestSuitesCombinator(Combinator):
                         "subscription_id": self.runbook.subscription_id,
                         "provisioning_timeout": self.runbook.vm_provisioning_timeout,
                         "wait_delete": False,
-                        "vm_tags": vm_tags
+                        "vm_tags": vm_tags,
+                        "credential": {
+                            "type": "azcli"
+                        }
                     },
                     "requirement": {
                         "core_count": {
